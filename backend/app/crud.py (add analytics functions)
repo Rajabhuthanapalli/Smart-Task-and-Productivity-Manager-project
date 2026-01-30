@@ -1,0 +1,13 @@
+from sqlalchemy.orm import Session
+from . import models
+
+def get_task_statistics(db: Session):
+    total_tasks = db.query(models.Task).count()
+    completed_tasks = db.query(models.Task).filter(models.Task.completed == True).count()
+    pending_tasks = total_tasks - completed_tasks
+
+    return {
+        "total_tasks": total_tasks,
+        "completed_tasks": completed_tasks,
+        "pending_tasks": pending_tasks
+    }
