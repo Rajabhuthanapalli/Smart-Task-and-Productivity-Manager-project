@@ -1,0 +1,19 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from .. import crud, database, auth
+
+router = APIRouter(prefix="/tasks", tags=["tasks"])
+
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@router.get("/stats")
+def task_stats(
+    db: Session = Depends(get_db),
+    current_user: str = Depends(auth.get_current_user)
+):
+    return crud.get_task_statistics(db)
