@@ -1,0 +1,31 @@
+from sqlalchemy.orm import Session
+from . import models
+
+def update_task(db: Session, task_id: int, title: str, description: str, completed: bool):
+    task = db.query(models.Task).filter(
+        models.Task.id == task_id,
+        models.Task.is_active == True
+    ).first()
+
+    if not task:
+        return None
+
+    task.title = title
+    task.description = description
+    task.completed = completed
+    db.commit()
+    db.refresh(task)
+    return task
+
+def soft_delete_task(db: Session, task_id: int):
+    task = db.query(models.Task).filter(
+        models.Task.id == task_id,
+        models.Task.is_active == True
+    ).first()
+
+    if not task:
+        return None
+
+    task.is_active = False
+    db.commit()
+    return task
