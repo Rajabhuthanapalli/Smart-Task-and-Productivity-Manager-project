@@ -1,0 +1,43 @@
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+from typing import Optional
+from sqlalchemy import asc, desc
+
+from app.database import get_db
+from app.models.task import Task
+
+router = APIRouter(prefix="/tasks", tags=["Tasks"])
+
+@router.get("/")
+def get_tasks(
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, le=50),
+    completed: Optional[bool] = None,
+    sort_by: Optional[str] = Query("created_at"),
+    order: Optional[str] = Query("desc")
+):
+    query = db.query(Task).filter(Task.is_deleted == False)
+
+    if completed is not None:
+        query = query.filter(Task.is_completed == completed)
+
+    # Sorting logic
+    if hasattr(Task, sort_by):
+        column = getattr(Task, sort_by)
+        if order.lower() == "asc":
+            query = query.order_by(asc(column))
+        else:
+            query = query.order_by(desc(column))
+
+    total_records = query.count()
+    tasks = query.offset((page - 1) * page_size).limit(page_size).all()
+
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_records": total_records,
+        "sort_by": sort_by,
+        "order": order,
+        "tasks": tasks
+    }
