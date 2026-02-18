@@ -1,0 +1,12 @@
+@router.get("/")
+def get_tasks(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    if current_user.role == "admin":
+        return db.query(Task).filter(Task.is_deleted == False).all()
+
+    return db.query(Task).filter(
+        Task.owner_id == current_user.id,
+        Task.is_deleted == False
+    ).all()
