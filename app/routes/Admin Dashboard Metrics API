@@ -1,0 +1,26 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.task import Task
+from app.models.user import User
+from app.core.dependencies import require_admin
+
+router = APIRouter(prefix="/admin", tags=["Admin"])
+
+@router.get("/dashboard")
+def get_dashboard_metrics(
+    db: Session = Depends(get_db),
+    admin_user = Depends(require_admin)
+):
+    total_users = db.query(User).count()
+    total_tasks = db.query(Task).filter(Task.is_deleted == False).count()
+    completed_tasks = db.query(Task).filter(
+        Task.is_completed == True,
+        Task.is_deleted == False
+    ).count()
+
+    return {
+        "total_users": total_users,
+        "total_tasks": total_tasks,
+        "completed_tasks": completed_tasks
+    }
