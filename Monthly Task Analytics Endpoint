@@ -1,0 +1,41 @@
+from sqlalchemy import func, extract
+from datetime import datetime
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.task import Task
+from app.core.dependencies import require_admin
+
+router = APIRouter(prefix="/admin", tags=["Admin"])
+
+@router.get("/monthly-analytics")
+def monthly_task_analytics(
+    db: Session = Depends(get_db),
+    admin_user = Depends(require_admin)
+):
+    current_year = datetime.utcnow().year
+    current_month = datetime.utcnow().month
+
+    total_tasks = db.query(func.count(Task.id)).filter(
+        extract('year', Task.created_at) == current_year,
+        extract('month', Task.created_at) == current_month,
+        Task.is_deleted == False
+    ).scalar()
+
+    completed_tasks = db.query(func.count(Task.id)).filter(
+        extract('year', Task.created_at) == current_year,
+        extract('month', Task.created_at) == current_month,
+        Task.is_completed == True,
+        Task.is_deleted == False
+    ).scalar()
+
+    pending_tasks = total_tasks - completed_tasks
+
+    return {
+        "year": current_year,
+        "month": current_month,
+        "total_tasks": total_tasks,
+        "completed_tasks": completed_tasks,
+        "pending_tasks": pending_tasks
+    }
