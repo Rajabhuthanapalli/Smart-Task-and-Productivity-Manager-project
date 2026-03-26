@@ -1,0 +1,26 @@
+package constructor;
+
+ class Student {
+    int id;
+    String name;
+
+    Student() {
+        id = 12;
+        name = "Raja";
+    }
+
+    void display() {
+        System.out.println(id + " " + name);
+    }
+
+    public static void main(String[] args) {
+        Student s1 = new Student();
+        s1.display();
+    }
+
+	public Student(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+}
