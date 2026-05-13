@@ -1,0 +1,37 @@
+from fastapi import APIRouter, HTTPException
+from utils.security_monitor import (
+    track_failed_login,
+    reset_failed_attempts
+)
+
+router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+VALID_USERS = {
+    "admin": "admin123"
+}
+
+
+@router.post("/login")
+def login(username: str, password: str):
+
+    if username not in VALID_USERS:
+        result = track_failed_login(username)
+
+        raise HTTPException(
+            status_code=401,
+            detail=result["message"]
+        )
+
+    if VALID_USERS[username] != password:
+        result = track_failed_login(username)
+
+        raise HTTPException(
+            status_code=401,
+            detail=result["message"]
+        )
+
+    reset_failed_attempts(username)
+
+    return {
+        "message": "Login successful"
+    }
