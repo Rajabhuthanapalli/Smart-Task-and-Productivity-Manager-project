@@ -1,0 +1,26 @@
+failed_attempts = {}
+
+MAX_FAILED_ATTEMPTS = 5
+
+
+def track_failed_login(username: str):
+
+    if username not in failed_attempts:
+        failed_attempts[username] = 0
+
+    failed_attempts[username] += 1
+
+    if failed_attempts[username] >= MAX_FAILED_ATTEMPTS:
+        return {
+            "alert": True,
+            "message": f"Multiple failed login attempts detected for user: {username}"
+        }
+
+    return {
+        "alert": False,
+        "message": "Login attempt recorded"
+    }
+
+
+def reset_failed_attempts(username: str):
+    failed_attempts[username] = 0
