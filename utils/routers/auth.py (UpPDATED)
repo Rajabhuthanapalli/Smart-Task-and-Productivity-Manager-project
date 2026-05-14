@@ -1,0 +1,57 @@
+from fastapi import APIRouter, HTTPException
+
+from utils.security_monitor import (
+    track_failed_login,
+    reset_failed_attempts,
+    failed_attempts,
+    MAX_FAILED_ATTEMPTS
+)
+
+from utils.account_lock import (
+    lock_account,
+    is_account_locked
+)
+
+router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+VALID_USERS = {
+    "admin": "admin123"
+}
+
+
+@router.post("/login")
+def login(username: str, password: str):
+
+    if is_account_locked(username):
+        raise HTTPException(
+            status_code=403,
+            detail="Account temporarily locked. Please try again later."
+        )
+
+    if username not in VALID_USERS:
+        result = track_failed_login(username)
+
+        if failed_attempts.get(username, 0) >= MAX_FAILED_ATTEMPTS:
+            lock_account(username)
+
+        raise HTTPException(
+            status_code=401,
+            detail=result["message"]
+        )
+
+    if VALID_USERS[username] != password:
+        result = track_failed_login(username)
+
+        if failed_attempts.get(username, 0) >= MAX_FAILED_ATTEMPTS:
+            lock_account(username)
+
+        raise HTTPException(
+            status_code=401,
+            detail=result["message"]
+        )
+
+    reset_failed_attempts(username)
+
+    return {
+        "message": "Login successful"
+    }
