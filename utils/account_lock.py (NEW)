@@ -1,0 +1,23 @@
+import time
+
+locked_accounts = {}
+
+LOCK_DURATION = 300  # 5 minutes
+
+
+def lock_account(username: str):
+    locked_accounts[username] = time.time() + LOCK_DURATION
+
+
+def is_account_locked(username: str):
+
+    if username not in locked_accounts:
+        return False
+
+    unlock_time = locked_accounts[username]
+
+    if time.time() > unlock_time:
+        del locked_accounts[username]
+        return False
+
+    return True
