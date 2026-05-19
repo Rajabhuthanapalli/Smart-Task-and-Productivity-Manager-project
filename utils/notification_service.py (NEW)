@@ -1,0 +1,16 @@
+from datetime import datetime
+
+
+def send_security_alert(username: str, event_type: str):
+
+    alert_message = {
+        "user": username,
+        "event": event_type,
+        "timestamp": str(datetime.utcnow()),
+        "status": "ALERT_TRIGGERED"
+    }
+
+    # Simulated alert logging
+    print("SECURITY ALERT:", alert_message)
+
+    return alert_message
