@@ -1,0 +1,17 @@
+from datetime import datetime
+
+
+def send_email_alert(to_email: str, subject: str, message: str):
+
+    email_data = {
+        "to": to_email,
+        "subject": subject,
+        "message": message,
+        "sent_at": str(datetime.utcnow()),
+        "status": "EMAIL_SENT"
+    }
+
+    # Simulated email sending
+    print("EMAIL ALERT:", email_data)
+
+    return email_data
