@@ -1,0 +1,22 @@
+from fastapi import APIRouter
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/security-dashboard",
+    tags=["Security Dashboard"]
+)
+
+security_metrics = {
+    "failed_logins": 12,
+    "locked_accounts": 3,
+    "alerts_generated": 7
+}
+
+
+@router.get("/metrics")
+def get_security_metrics():
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "metrics": security_metrics
+    }
