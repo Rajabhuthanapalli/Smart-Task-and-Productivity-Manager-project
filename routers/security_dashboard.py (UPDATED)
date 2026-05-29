@@ -1,0 +1,39 @@
+from fastapi import APIRouter, Query
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/security-dashboard",
+    tags=["Security Dashboard"]
+)
+
+mock_security_logs = [
+    {"date": "2026-05-26", "failed_logins": 5, "locked_accounts": 1},
+    {"date": "2026-05-27", "failed_logins": 3, "locked_accounts": 0},
+    {"date": "2026-05-28", "failed_logins": 4, "locked_accounts": 2},
+]
+
+
+@router.get("/metrics/filter")
+def filter_security_metrics(
+    start_date: str = Query(...),
+    end_date: str = Query(...)
+):
+
+    filtered_data = [
+        log for log in mock_security_logs
+        if start_date <= log["date"] <= end_date
+    ]
+
+    total_failed = sum(item["failed_logins"] for item in filtered_data)
+    total_locked = sum(item["locked_accounts"] for item in filtered_data)
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "start_date": start_date,
+        "end_date": end_date,
+        "summary": {
+            "failed_logins": total_failed,
+            "locked_accounts": total_locked
+        },
+        "records": filtered_data
+    }
