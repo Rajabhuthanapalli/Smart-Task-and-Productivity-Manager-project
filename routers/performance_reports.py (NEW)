@@ -1,0 +1,40 @@
+from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
+import csv
+import io
+
+router = APIRouter(
+    prefix="/performance-reports",
+    tags=["Performance Reports"]
+)
+
+@router.get("/export")
+def export_performance_report():
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Date",
+        "API Name",
+        "Average Response Time",
+        "Request Count"
+    ])
+
+    writer.writerow([
+        "2026-06-25",
+        "Dashboard API",
+        "120ms",
+        "2500"
+    ])
+
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+            "attachment; filename=performance_report.csv"
+        }
+    )
