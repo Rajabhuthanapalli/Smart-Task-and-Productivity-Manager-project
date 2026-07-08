@@ -1,0 +1,23 @@
+from fastapi import APIRouter
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/user-activity",
+    tags=["User Activity"]
+)
+
+mock_activity = {
+    "tasks_created": 148,
+    "tasks_completed": 126,
+    "pending_tasks": 22,
+    "active_users": 18
+}
+
+
+@router.get("/summary")
+def get_user_activity_summary():
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "activity": mock_activity
+    }
