@@ -1,0 +1,23 @@
+from fastapi import APIRouter
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/activity-reports",
+    tags=["Activity Reports"]
+)
+
+@router.get("/weekly-summary")
+def get_weekly_summary():
+
+    report = {
+        "week": "2026-07-13 to 2026-07-19",
+        "tasks_created": 34,
+        "tasks_completed": 29,
+        "tasks_pending": 5,
+        "completion_rate": "85%"
+    }
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "weekly_report": report
+    }
