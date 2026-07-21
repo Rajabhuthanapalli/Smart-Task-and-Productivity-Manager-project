@@ -1,0 +1,24 @@
+from fastapi import APIRouter
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/activity-reports",
+    tags=["Activity Reports"]
+)
+
+
+@router.get("/monthly-summary")
+def get_monthly_summary():
+
+    report = {
+        "month": "July 2026",
+        "tasks_created": 142,
+        "tasks_completed": 128,
+        "tasks_pending": 14,
+        "completion_rate": "90%"
+    }
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "monthly_report": report
+    }
