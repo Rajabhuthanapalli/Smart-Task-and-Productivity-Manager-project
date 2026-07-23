@@ -1,0 +1,40 @@
+from fastapi import APIRouter, Query
+from datetime import datetime
+
+router = APIRouter(
+    prefix="/activity-reports",
+    tags=["Activity Reports"]
+)
+
+
+user_reports = [
+    {
+        "user": "admin",
+        "tasks_created": 50,
+        "tasks_completed": 45,
+        "pending_tasks": 5
+    },
+    {
+        "user": "developer",
+        "tasks_created": 40,
+        "tasks_completed": 35,
+        "pending_tasks": 5
+    }
+]
+
+
+@router.get("/user-summary")
+def get_user_summary(
+    username: str = Query(...)
+):
+
+    user_data = [
+        report for report in user_reports
+        if report["user"] == username
+    ]
+
+    return {
+        "generated_at": str(datetime.utcnow()),
+        "user": username,
+        "report": user_data
+    }
