@@ -1,0 +1,28 @@
+from datetime import datetime
+
+
+def generate_scheduled_report():
+
+    report = {
+        "report_type": "Weekly Activity Report",
+        "generated_date": str(datetime.utcnow()),
+        "status": "Generated",
+        "summary": {
+            "total_users": 25,
+            "tasks_created": 320,
+            "tasks_completed": 280,
+            "pending_tasks": 40
+        }
+    }
+
+    return report
+
+
+def schedule_report():
+
+    report = generate_scheduled_report()
+
+    print("Scheduled Report Generated:")
+    print(report)
+
+    return report
