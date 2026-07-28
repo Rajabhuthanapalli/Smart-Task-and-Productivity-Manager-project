@@ -1,0 +1,16 @@
+from datetime import datetime
+
+
+def send_report_email(recipient: str, report_name: str):
+
+    email_details = {
+        "recipient": recipient,
+        "report": report_name,
+        "status": "Email Sent",
+        "sent_at": str(datetime.utcnow())
+    }
+
+    print("Sending report email...")
+    print(email_details)
+
+    return email_details
